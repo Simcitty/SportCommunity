@@ -1,0 +1,220 @@
+<div class="map-shell">
+
+  <!-- ── Topbar ── -->
+  <nav class="topbar">
+    <a routerLink="/dashboard" class="topbar-brand">
+      <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/>
+        <path d="M14 6 L18 14 L14 22 L10 14 Z" fill="currentColor" opacity=".7"/>
+        <circle cx="14" cy="14" r="3" fill="currentColor"/>
+      </svg>
+      SportCom
+    </a>
+
+    <div class="topbar-center">
+      <span class="sport-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        Beachvolleyball-Plätze
+      </span>
+    </div>
+
+    <!-- Radius Filter -->
+    <div class="radius-filter">
+      <span class="filter-label">Umkreis</span>
+      @for (r of [2000, 5000, 10000, 20000]; track r) {
+        <button
+          class="radius-btn"
+          [class.active]="searchRadius() === r"
+          (click)="changeRadius(r)"
+        >
+          {{ r / 1000 }} km
+        </button>
+      }
+    </div>
+  </nav>
+
+  <!-- ── Hauptbereich ── -->
+  <div class="map-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">
+          Gefundene Plätze
+          @if (status() === 'ready') {
+            <span class="count-badge">{{ courts().length }}</span>
+          }
+        </h2>
+        <button class="locate-btn" (click)="centerOnUser()" title="Meinen Standort anzeigen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Loading / Searching State -->
+      @if (status() !== 'ready' && status() !== 'error') {
+        <div class="sidebar-state">
+          <div class="spinner"></div>
+          <p>{{ statusLabel() }}</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (status() === 'error') {
+        <div class="sidebar-state sidebar-state--error">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 7v6M12 16v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>{{ errorMessage() }}</p>
+          <p class="error-hint">Stelle sicher, dass dein API Key gültig ist und die Places API aktiviert ist.</p>
+        </div>
+      }
+
+      <!-- Keine Ergebnisse -->
+      @if (status() === 'ready' && courts().length === 0) {
+        <div class="sidebar-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+            <path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>Keine Beachvolleyball-Plätze im Umkreis gefunden.</p>
+          <button class="btn-try-more" (click)="changeRadius(20000)">Auf 20 km erweitern</button>
+        </div>
+      }
+
+      <!-- Court Liste -->
+      @if (status() === 'ready') {
+        <ul class="court-list">
+          @for (court of courts(); track court.placeId; let i = $index) {
+            <li
+              class="court-item"
+              [class.court-item--active]="selectedCourt()?.placeId === court.placeId"
+              (click)="selectCourt(court)"
+            >
+              <span class="court-number">{{ i + 1 }}</span>
+              <div class="court-info">
+                <h3 class="court-name">{{ court.name }}</h3>
+                <p class="court-address">{{ court.address }}</p>
+                <div class="court-meta">
+                  @if (court.surface) {
+                    <span class="court-tag">{{ court.surface }}</span>
+                  }
+                  @if (court.capacity) {
+                    <span class="court-tag">{{ court.capacity }} Plätze</span>
+                  }
+                  @if (court.phone) {
+                    <span class="court-tag"> {{ court.phone }}</span>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <!-- Map Canvas -->
+    <div class="map-container">
+      <div #mapCanvas class="map-canvas"></div>
+
+      <!-- Loading Overlay -->
+      @if (status() !== 'ready' && status() !== 'error') {
+        <div class="map-overlay">
+          <div class="map-overlay-inner">
+            <div class="spinner spinner--lg"></div>
+            <p>{{ statusLabel() }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Selected Court Detail Card -->
+      @if (selectedCourt(); as court) {
+        <div class="detail-card">
+          <button class="detail-close" (click)="closeDetail()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          @if (court.photoUrl) {
+            <img class="detail-photo" [src]="court.photoUrl" [alt]="court.name"/>
+          } @else {
+            <div class="detail-photo-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" opacity=".3">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 12h20M12 2a15 15 0 010 20" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+          }
+
+          <div class="detail-body">
+            <h3 class="detail-name">{{ court.name }}</h3>
+            <p class="detail-address">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s-8-6.5-8-12a8 8 0 1116 0c0 5.5-8 12-8 12z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2" stroke="currentColor" stroke-width="1.8"/></svg>
+              {{ court.address }}
+            </p>
+            @if (court.rating) {
+              <div class="detail-rating">
+                <span class="stars">{{ starsArray(court.rating) }}</span>
+                <span class="rating-val">{{ court.rating | number:'1.1-1' }}</span>
+                <span class="rating-count">({{ court.userRatingsTotal }} Bewertungen)</span>
+              </div>
+            }
+            @if (court.openNow !== undefined) {
+              <span class="open-pill" [class.open]="court.openNow">
+                {{ court.openNow ? ' Jetzt geöffnet' : ' Geschlossen' }}
+              </span>
+            }
+            <div class="detail-tags">
+              @if (court.surface) {
+                <span class="tag">{{ court.surface }}</span>
+              }
+              @if (court.capacity) {
+                <span class="tag">{{ court.capacity }} Plätze</span>
+              }
+              @if (court.openingHours) {
+                <span class="tag">Öffnungszeiten</span>
+              }
+            </div>
+            @if (court.phone) {
+              <p class="detail-info">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="1.5"/></svg>
+                <a [href]="'tel:' + court.phone">{{ court.phone }}</a>
+              </p>
+            }
+            @if (court.website) {
+              <p class="detail-info">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M2 12h20M12 2a15 15 0 010 20" stroke="currentColor" stroke-width="1.5"/></svg>
+                <a [href]="court.website" target="_blank" rel="noopener">Website</a>
+              </p>
+            }
+            <div class="detail-buttons">
+              <button class="btn-events" (click)="openEventDialog(court)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M12 6v6M9 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Volleyball Events
+              </button>
+              <a class="btn-maps" [href]="mapsUrl(court)" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                In Google Maps öffnen
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Event Dialog -->
+      @if (showEventDialog()) {
+        <app-event-dialog #eventDialog (close)="closeEventDialog()"></app-event-dialog>
+      }
+    </div>
+  </div>
+</div>

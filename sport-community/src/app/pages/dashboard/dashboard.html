@@ -1,0 +1,126 @@
+<div class="dash-shell">
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/>
+        <path d="M14 6 L18 14 L14 22 L10 14 Z" fill="currentColor" opacity=".7"/>
+        <circle cx="14" cy="14" r="3" fill="currentColor"/>
+      </svg>
+      <span>SportCom</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="user-badge">{{ auth.currentUser()?.username }}</span>
+      <button class="btn btn--ghost btn--sm" (click)="logout()">Abmelden</button>
+    </div>
+  </nav>
+
+  <div class="dash-hero">
+    <h1 class="dash-greeting">
+      Hallo, <span class="accent">{{ auth.currentUser()?.username }}</span> 
+    </h1>
+    <p class="dash-sub">Entdecke Events und verbinde dich mit anderen</p>
+
+    <!-- Main Features - Large Hero Cards -->
+    <div class="hero-features">
+      <a routerLink="/map" class="hero-card hero-card--primary">
+        <div class="hero-card-content">
+          <span class="hero-icon"></span>
+          <h2>Beachvolleyball-Karte</h2>
+          <p>Finde Plätze in deiner Umgebung und erstelle Events</p>
+          <div class="hero-stat">
+            <span class="stat-number">{{ eventStats().total }}</span>
+            <span class="stat-label">Events insgesamt</span>
+          </div>
+        </div>
+        <svg class="hero-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <a routerLink="/chat" class="hero-card hero-card--secondary">
+        <div class="hero-card-content">
+          <span class="hero-icon"></span>
+          <h2>Gruppen & Chat</h2>
+          <p>Tausche dich mit anderen Volleyballern aus</p>
+          <div class="hero-stat">
+            <span class="stat-number">{{ userGroups().length }}</span>
+            <span class="stat-label">Deine Gruppen</span>
+          </div>
+        </div>
+        <svg class="hero-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div>
+          <div class="stat-value">{{ eventStats().upcoming }}</div>
+          <div class="stat-name">Events kommend</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div>
+          <div class="stat-value">{{ eventStats().userJoined }}</div>
+          <div class="stat-name">Deine Events</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div>
+          <div class="stat-value">{{ userGroups().length }}</div>
+          <div class="stat-name">Gruppen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    @if (upcomingEvents().length > 0) {
+      <div class="events-section">
+        <div class="section-header">
+          <h2 class="section-title">Nächste Events</h2>
+          <a routerLink="/map" class="view-all-link">Alle ansehen →</a>
+        </div>
+        <div class="events-grid">
+          @for (event of upcomingEvents(); track event.id) {
+            <div class="event-preview">
+              <div class="event-preview-header">
+                <h4>{{ event.courtName }}</h4>
+                <span class="participant-count">
+                  {{ event.participants.length }}<span class="text-muted">/{{ event.maxPlayers }}</span>
+                </span>
+              </div>
+              <p class="event-preview-date">
+                {{ event.date | date: 'dd.MM.' }} um {{ event.time }} Uhr
+              </p>
+              <p class="event-preview-creator">
+                von <strong>{{ event.creator }}</strong>
+              </p>
+              <div class="event-preview-levels">
+                @for (p of event.participants.slice(0, 3); track p.username) {
+                  <span class="level-badge" [class]="'level-' + p.level" [title]="p.username">
+                    {{ p.level }}
+                  </span>
+                }
+                @if (event.participants.length > 3) {
+                  <span class="more-badge">+{{ event.participants.length - 3 }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="empty-events">
+        <div class="empty-icon"></div>
+        <h3>Noch keine Events</h3>
+        <p>Erstelle ein Event oder entdecke andere auf der Karte!</p>
+        <a routerLink="/map" class="btn btn--primary">Zur Karte</a>
+      </div>
+    }
+  </div>
+</div>

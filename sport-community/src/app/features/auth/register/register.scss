@@ -1,0 +1,302 @@
+/* ── Auth Shell Layout ── */
+.auth-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Brand Panel ── */
+.auth-brand {
+  position: relative;
+  background: var(--clr-surface);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (max-width: 860px) { display: none; }
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: auto;
+  padding-bottom: 60px;
+}
+.logo-icon { color: var(--clr-accent); display: flex; }
+.logo-text  {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: .08em;
+  color: var(--clr-text);
+}
+
+.brand-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.brand-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 5vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: .02em;
+  color: var(--clr-text);
+  margin-bottom: 20px;
+
+  .accent { color: var(--clr-accent); }
+}
+.brand-sub {
+  font-size: .95rem;
+  color: var(--clr-muted);
+  line-height: 1.7;
+  max-width: 340px;
+}
+
+/* ── Feature List ── */
+.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 40px 0;
+}
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .9rem;
+  color: var(--clr-muted);
+}
+.feature-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--clr-accent);
+  flex-shrink: 0;
+}
+
+/* ── Stats ── */
+.brand-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.stat { text-align: center; }
+.stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--clr-accent);
+  line-height: 1;
+}
+.stat-label {
+  display: block;
+  font-size: .72rem;
+  color: var(--clr-muted);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--clr-border);
+}
+
+/* ── Decorative ── */
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: .06;
+  background: var(--clr-accent);
+  z-index: 1;
+}
+.deco-1 { width: 420px; height: 420px; top: -160px; right: -160px; }
+.deco-2 { width: 280px; height: 280px; bottom: -100px; left: -80px; }
+.deco-line {
+  position: absolute;
+  bottom: 0; left: 48px; right: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--clr-accent), transparent);
+  opacity: .3;
+  z-index: 2;
+}
+
+/* ── Form Panel ── */
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--clr-bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  animation: fadeUp .45s ease both;
+}
+
+.card-header {
+  margin-bottom: 32px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: .04em;
+  color: var(--clr-text);
+  margin-bottom: 6px;
+}
+.card-sub {
+  font-size: .9rem;
+  color: var(--clr-muted);
+}
+
+/* ── Alert ── */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: .85rem;
+  margin-bottom: 20px;
+  animation: fadeUp .3s ease;
+
+  &--error {
+    background: rgba(255,75,75,.08);
+    border: 1px solid rgba(255,75,75,.25);
+    color: #ff7a7a;
+  }
+}
+
+/* ── Form ── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+
+  .form-control { padding-left: 42px; padding-right: 42px; }
+
+  &--error .form-control {
+    border-color: var(--clr-danger);
+    box-shadow: 0 0 0 3px rgba(255,75,75,.1);
+  }
+}
+.input-icon {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-muted-2);
+  display: flex;
+  pointer-events: none;
+}
+.pw-toggle {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-muted-2);
+  display: flex;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color var(--transition);
+  &:hover { color: var(--clr-text); }
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.forgot-link {
+  font-size: .78rem;
+  color: var(--clr-accent);
+  font-weight: 500;
+  transition: opacity var(--transition);
+  &:hover { opacity: .7; }
+}
+
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+  color: var(--clr-muted-2);
+  font-size: .8rem;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--clr-border);
+  }
+}
+
+/* ── Social ── */
+.social-btn {
+  opacity: .4;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* ── Footer ── */
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: .88rem;
+  color: var(--clr-muted);
+}
+.auth-link {
+  color: var(--clr-accent);
+  font-weight: 600;
+  margin-left: 4px;
+  transition: opacity var(--transition);
+  &:hover { opacity: .75; }
+}
+
+/* ── Password Strength ── */
+.pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.pw-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--clr-border);
+  transition: background var(--transition);
+
+  &.active[data-level="1"] { background: var(--clr-danger); }
+  &.active[data-level="2"] { background: #f59e0b; }
+  &.active[data-level="3"] { background: #10b981; }
+  &.active[data-level="4"] { background: var(--clr-accent); }
+}
+.pw-label {
+  font-size: .72rem;
+  color: var(--clr-muted);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}

@@ -1,0 +1,189 @@
+<div class="auth-shell">
+  <!-- Left: Branding Panel -->
+  <aside class="auth-brand">
+    <div class="brand-content">
+      <div class="logo">
+        <span class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 6 L18 14 L14 22 L10 14 Z" fill="currentColor" opacity=".7"/>
+            <circle cx="14" cy="14" r="3" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="logo-text">SportCom</span>
+      </div>
+
+      <div class="brand-body">
+        <h1 class="brand-headline">Finde.<br>Triff.<br>Beweg<span class="accent">.</span></h1>
+        <p class="brand-sub">
+          Entdecke Sportplätze und Routen in deiner Umgebung, erstelle Events und trainiere mit anderen.
+        </p>
+      </div>
+
+      <ul class="feature-list">
+        <li class="feature-item">
+          <span class="feature-dot"></span>
+          Interaktive Kartenansicht
+        </li>
+        <li class="feature-item">
+          <span class="feature-dot"></span>
+          Routen aufzeichnen & teilen
+        </li>
+        <li class="feature-item">
+          <span class="feature-dot"></span>
+          Events erstellen & beitreten
+        </li>
+        <li class="feature-item">
+          <span class="feature-dot"></span>
+          Echtzeit-Community-Chat
+        </li>
+      </ul>
+
+      <div class="brand-stats">
+        <div class="stat">
+          <span class="stat-value">2.4k</span>
+          <span class="stat-label">Sportplätze</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">580</span>
+          <span class="stat-label">Aktive Routen</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">120+</span>
+          <span class="stat-label">Events / Monat</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative background shapes -->
+    <div class="deco-circle deco-1"></div>
+    <div class="deco-circle deco-2"></div>
+    <div class="deco-line"></div>
+  </aside>
+
+  <!-- Right: Form Panel -->
+  <main class="auth-form-panel">
+    <div class="auth-card">
+      <span class="card-badge">Schneller Zugang</span>
+      <div class="card-header">
+        <h2 class="card-title">Willkommen zurück</h2>
+        <p class="card-sub">Melde dich in deinem Konto an und starte direkt mit deinem nächsten Sport-Event.</p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (error()) {
+        <div class="alert alert--error" role="alert">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 4.5v4M8 10.5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">E-Mail-Adresse</label>
+          <div class="input-wrapper" [class.input-wrapper--error]="email.invalid && email.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M1.5 5.5l6.5 4 6.5-4" stroke="currentColor" stroke-width="1.3"/>
+              </svg>
+            </span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="form-control"
+              placeholder="name@beispiel.at"
+              autocomplete="email"
+            />
+          </div>
+          @if (email.invalid && email.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              @if (email.errors?.['required']) { E-Mail ist erforderlich }
+              @else { Ungültige E-Mail-Adresse }
+            </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <div class="label-row">
+            <label class="form-label" for="password">Passwort</label>
+            <a href="#" class="forgot-link">Vergessen?</a>
+          </div>
+          <div class="input-wrapper" [class.input-wrapper--error]="password.invalid && password.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="2.5" y="7" width="11" height="7.5" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.3"/>
+                <circle cx="8" cy="10.5" r="1.2" fill="currentColor"/>
+              </svg>
+            </span>
+            <input
+              id="password"
+              [type]="showPw() ? 'text' : 'password'"
+              formControlName="password"
+              class="form-control"
+              placeholder="Mindestens 6 Zeichen"
+              autocomplete="current-password"
+            />
+            <button type="button" class="pw-toggle" (click)="togglePw()" [attr.aria-label]="showPw() ? 'Passwort verbergen' : 'Passwort anzeigen'">
+              @if (!showPw()) {
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5S1 8 1 8z" stroke="currentColor" stroke-width="1.3"/>
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>
+                </svg>
+              } @else {
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5S1 8 1 8zM2 2l12 12" stroke="currentColor" stroke-width="1.3"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (password.invalid && password.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              @if (password.errors?.['required']) { Passwort ist erforderlich }
+              @else { Mindestens 6 Zeichen }
+            </span>
+          }
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn btn--primary btn--full"
+          [class.btn--loading]="loading()"
+          [disabled]="loading()"
+        >
+          @if (!loading()) { Anmelden }
+        </button>
+      </form>
+
+      <div class="divider"><span>oder</span></div>
+
+      <!-- Social (coming soon placeholder) -->
+      <button class="btn btn--ghost btn--full social-btn" disabled>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2a10 10 0 00-.16-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.9c1.7-1.56 2.7-3.87 2.7-6.62z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.36 0-4.35-1.59-5.06-3.73H.88v2.33A9 9 0 009 18z" fill="#34A853"/>
+          <path d="M3.94 10.69A5.41 5.41 0 013.66 9c0-.59.1-1.17.28-1.69V4.98H.88A9 9 0 000 9c0 1.45.35 2.82.88 4.02l3.06-2.33z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.32 0 2.51.45 3.44 1.34l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 00.88 4.98L3.94 7.3C4.65 5.17 6.64 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Mit Google anmelden (demnächst)
+      </button>
+
+      <p class="auth-footer">
+        Noch kein Konto?
+        <a routerLink="/auth/register" class="auth-link">Jetzt registrieren</a>
+      </p>
+    </div>
+  </main>
+</div>

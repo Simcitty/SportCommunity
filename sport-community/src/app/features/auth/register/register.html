@@ -1,0 +1,138 @@
+<div class="auth-shell">
+  <aside class="auth-brand">
+    <div class="brand-content">
+      <div class="logo">
+        <span class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 6 L18 14 L14 22 L10 14 Z" fill="currentColor" opacity=".7"/>
+            <circle cx="14" cy="14" r="3" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="logo-text">SportCom</span>
+      </div>
+      <div class="brand-body">
+        <h1 class="brand-headline">Werde<br>Teil der<br>Community<span class="accent">.</span></h1>
+        <p class="brand-sub">Kostenlos registrieren und sofort loslegen.</p>
+      </div>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="feature-dot"></span>Keine Gebühren</li>
+        <li class="feature-item"><span class="feature-dot"></span>Sofortiger Zugang</li>
+        <li class="feature-item"><span class="feature-dot"></span>Community-Features</li>
+        <li class="feature-item"><span class="feature-dot"></span>Datenschutz first</li>
+      </ul>
+    </div>
+    <div class="deco-circle deco-1"></div>
+    <div class="deco-circle deco-2"></div>
+    <div class="deco-line"></div>
+  </aside>
+
+  <main class="auth-form-panel">
+    <div class="auth-card">
+      <div class="card-header">
+        <h2 class="card-title">Konto erstellen</h2>
+        <p class="card-sub">Starte deine Sport-Community heute</p>
+      </div>
+
+      @if (error()) {
+        <div class="alert alert--error" role="alert">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.5v4M8 10.5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+        <!-- Username -->
+        <div class="form-group">
+          <label class="form-label" for="username">Benutzername</label>
+          <div class="input-wrapper" [class.input-wrapper--error]="username.invalid && username.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 13.5c0-3.31 2.69-4.5 6-4.5s6 1.19 6 4.5" stroke="currentColor" stroke-width="1.3"/></svg>
+            </span>
+            <input id="username" type="text" formControlName="username" class="form-control" placeholder="max_mustermann" autocomplete="username"/>
+          </div>
+          @if (username.invalid && username.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              @if (username.errors?.['required']) { Benutzername erforderlich }
+              @else { Mindestens 3 Zeichen }
+            </span>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">E-Mail-Adresse</label>
+          <div class="input-wrapper" [class.input-wrapper--error]="email.invalid && email.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 5.5l6.5 4 6.5-4" stroke="currentColor" stroke-width="1.3"/></svg>
+            </span>
+            <input id="email" type="email" formControlName="email" class="form-control" placeholder="name@beispiel.at" autocomplete="email"/>
+          </div>
+          @if (email.invalid && email.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              @if (email.errors?.['required']) { E-Mail erforderlich } @else { Ungültige E-Mail }
+            </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">Passwort</label>
+          <div class="input-wrapper" [class.input-wrapper--error]="password.invalid && password.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="7" width="11" height="7.5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="10.5" r="1.2" fill="currentColor"/></svg>
+            </span>
+            <input id="password" [type]="showPw() ? 'text' : 'password'" formControlName="password" class="form-control" placeholder="Mindestens 8 Zeichen" autocomplete="new-password"/>
+            <button type="button" class="pw-toggle" (click)="togglePw()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5S1 8 1 8z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+            </button>
+          </div>
+          @if (password.value) {
+            <div class="pw-strength">
+              @for (i of [1,2,3,4]; track i) {
+                <div class="pw-bar" [class.active]="pwStrength().level >= i" [attr.data-level]="pwStrength().level"></div>
+              }
+              @if (pwStrength().label) {
+                <span class="pw-label">{{ pwStrength().label }}</span>
+              }
+            </div>
+          }
+          @if (password.invalid && password.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Mindestens 8 Zeichen
+            </span>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Passwort bestätigen</label>
+          <div class="input-wrapper" [class.input-wrapper--error]="(confirmPassword.invalid || form.errors?.['passwordMismatch']) && confirmPassword.touched">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 6.5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <input id="confirmPassword" [type]="showPw() ? 'text' : 'password'" formControlName="confirmPassword" class="form-control" placeholder="Passwort wiederholen" autocomplete="new-password"/>
+          </div>
+          @if (form.errors?.['passwordMismatch'] && confirmPassword.touched) {
+            <span class="form-error">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Passwörter stimmen nicht überein
+            </span>
+          }
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full" [class.btn--loading]="loading()" [disabled]="loading()">
+          @if (!loading()) { Konto erstellen }
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        Bereits registriert?
+        <a routerLink="/auth/login" class="auth-link">Anmelden</a>
+      </p>
+    </div>
+  </main>
+</div>

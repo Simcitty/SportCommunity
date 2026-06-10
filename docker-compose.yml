@@ -1,0 +1,40 @@
+services:
+
+  frontend:
+    build: ./sport-community
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - sport-net
+
+  backend:
+    build: ./sport-community-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/sport-community
+      - JWT_SECRET=dein-super-geheimer-schluessel
+      - JWT_EXPIRES_IN=24h
+      - CLIENT_URL=http://localhost
+    depends_on:
+      - mongo
+    networks:
+      - sport-net
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - sport-net
+
+volumes:
+  mongo-data:
+
+networks:
+  sport-net:
