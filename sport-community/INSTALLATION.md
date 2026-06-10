@@ -33,11 +33,9 @@ Docker startet die App in einem Container, ohne dass du Programmierkenntnisse br
 Öffne dein Terminal (oder CMD auf Windows) und gib ein:
 
 ```bash
-git clone https://github.com/deinBenutzer/sport-community.git
+git clone https://github.com/Simcitty/SportCommunity.git
 cd sport-community
 ```
-
-Falls es ein anderes Git-Repo ist, ersetze die URL.
 
 ---
 
