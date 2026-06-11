@@ -304,22 +304,35 @@ export class MapComponent implements OnInit, OnDestroy {
   // ── Geolocation ───────────────────────────────────────────────────
   private _getUserLocation(): Promise<google.maps.LatLngLiteral> {
     return new Promise((resolve) => {
+      const HOLLABRUNN_FALLBACK = { lat: 48.5693, lng: 15.5829 };  // Hollabrunn
+
       if (!navigator.geolocation) {
-        console.warn('Geolocation nicht unterstützt, Fallback: Klosterneuburg');
-        resolve({ lat: 48.3063, lng: 16.3267 });
+        console.warn('Geolocation nicht unterstützt, Fallback: Hollabrunn');
+        resolve(HOLLABRUNN_FALLBACK);
         return;
       }
 
+      // Promise mit eigenem Timeout um Race-Conditions zu vermeiden
+      const timeoutId = setTimeout(() => {
+        console.warn('Geolocation-Timeout (10s), Fallback: Hollabrunn');
+        resolve(HOLLABRUNN_FALLBACK);
+      }, 10000);
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          console.log(' Standort erhalten:', pos.coords.latitude, pos.coords.longitude);
-          resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          clearTimeout(timeoutId);
+          const location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          console.log(' Standort erhalten:', location);
+          // Speichere Standort für zukünftige Besuche
+          sessionStorage.setItem('lastUserLocation', JSON.stringify(location));
+          resolve(location);
         },
         (err) => {
-          console.warn('️ Standort verweigert oder Fehler:', err.message, '→ Fallback: Klosterneuburg');
-          resolve({ lat: 48.3063, lng: 16.3267 });  // Klosterneuburg als Fallback
+          clearTimeout(timeoutId);
+          console.warn('️ Standort verweigert oder Fehler:', err.message, '→ Fallback: Hollabrunn');
+          resolve(HOLLABRUNN_FALLBACK);
         },
-        { timeout: 8000, enableHighAccuracy: true },
+        { timeout: 8000, enableHighAccuracy: true, maximumAge: 0 },
       );
     });
   }
