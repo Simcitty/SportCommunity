@@ -1,12 +1,16 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 export interface User {
-  id: string;
+  _id?: string;
+  id?: string;
   username: string;
   email: string;
   avatarUrl?: string;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface LoginPayload {
@@ -20,6 +24,11 @@ export interface RegisterPayload {
   password: string;
 }
 
+interface AuthResponse {
+  access_token: string;
+  user: User;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'sc_auth_token';
@@ -29,38 +38,51 @@ export class AuthService {
   currentUser = signal<User | null>(this._loadUser());
   isLoggedIn  = signal<boolean>(!!this._loadToken());
 
-  constructor(private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   // ── Login ─────────────────────────────────────────
   async login(payload: LoginPayload): Promise<void> {
-    // TODO: replace with real HTTP call → POST /api/auth/login
-    await this._simulateRequest(900);
+    try {
+      const response = await firstValueFrom(
+        this.http.post<AuthResponse>(
+          `${environment.apiUrl}/auth/login`,
+          payload,
+        ),
+      );
 
-    const mockUser: User = {
-      id: '1',
-      username: payload.email.split('@')[0],
-      email: payload.email,
-      createdAt: new Date(),
-    };
-    const mockToken = btoa(JSON.stringify({ userId: mockUser.id, exp: Date.now() + 86400000 }));
+      if (!response) {
+        throw new Error('Keine Antwort vom Server');
+      }
 
-    this._persist(mockToken, mockUser);
+      this._persist(response.access_token, response.user);
+    } catch (err) {
+      const message = this._getErrorMessage(err);
+      throw new Error(message);
+    }
   }
 
   // ── Register ──────────────────────────────────────
   async register(payload: RegisterPayload): Promise<void> {
-    // TODO: replace with real HTTP call → POST /api/auth/register
-    await this._simulateRequest(1200);
+    try {
+      const response = await firstValueFrom(
+        this.http.post<AuthResponse>(
+          `${environment.apiUrl}/auth/register`,
+          payload,
+        ),
+      );
 
-    const mockUser: User = {
-      id: Date.now().toString(),
-      username: payload.username,
-      email: payload.email,
-      createdAt: new Date(),
-    };
-    const mockToken = btoa(JSON.stringify({ userId: mockUser.id, exp: Date.now() + 86400000 }));
+      if (!response) {
+        throw new Error('Keine Antwort vom Server');
+      }
 
-    this._persist(mockToken, mockUser);
+      this._persist(response.access_token, response.user);
+    } catch (err) {
+      const message = this._getErrorMessage(err);
+      throw new Error(message);
+    }
   }
 
   // ── Logout ────────────────────────────────────────
@@ -70,6 +92,11 @@ export class AuthService {
     this.currentUser.set(null);
     this.isLoggedIn.set(false);
     this.router.navigate(['/auth/login']);
+  }
+
+  // ── Get Token ─────────────────────────────────────
+  getToken(): string | null {
+    return this._loadToken();
   }
 
   // ── Helpers ───────────────────────────────────────
@@ -89,7 +116,13 @@ export class AuthService {
     return raw ? JSON.parse(raw) : null;
   }
 
-  private _simulateRequest(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  private _getErrorMessage(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      return err.error?.message || err.statusText || 'Ein Fehler ist aufgetreten';
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return 'Ein unbekannter Fehler ist aufgetreten';
   }
 }

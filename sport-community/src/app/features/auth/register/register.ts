@@ -57,8 +57,10 @@ export class RegisterComponent {
         password: this.password.value,
       });
       this.router.navigate(['/dashboard']);
-    } catch {
-      this.error.set('Registrierung fehlgeschlagen. Bitte versuche es erneut.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Registrierung fehlgeschlagen';
+      this.error.set(message);
+      console.error('Register error:', err);
     } finally {
       this.loading.set(false);
     }

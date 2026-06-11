@@ -24,7 +24,7 @@ export class LoginComponent {
   ) {
     this.form = this.fb.group({
       email:    ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 
@@ -32,7 +32,10 @@ export class LoginComponent {
   get password() { return this.form.get('password')!; }
 
   async onSubmit(): Promise<void> {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.loading.set(true);
     this.error.set(null);
@@ -43,8 +46,10 @@ export class LoginComponent {
         password: this.password.value,
       });
       this.router.navigate(['/dashboard']);
-    } catch {
-      this.error.set('Ungültige E-Mail oder Passwort. Bitte versuche es erneut.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Ungültige E-Mail oder Passwort';
+      this.error.set(message);
+      console.error('Login error:', err);
     } finally {
       this.loading.set(false);
     }
@@ -52,3 +57,4 @@ export class LoginComponent {
 
   togglePw(): void { this.showPw.update(v => !v); }
 }
+

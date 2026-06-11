@@ -18,7 +18,7 @@ services:
       - MONGODB_URI=mongodb://mongo:27017/sport-community
       - JWT_SECRET=dein-super-geheimer-schluessel
       - JWT_EXPIRES_IN=24h
-      - CLIENT_URL=http://localhost
+      - CLIENT_URL=http://localhost:4200
     depends_on:
       - mongo
     networks:
