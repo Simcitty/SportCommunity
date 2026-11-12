@@ -26,6 +26,11 @@ export const routes: Routes = [
       import('./pages/dashboard/dashboard').then(m => m.DashboardComponent),
   },
   {
+    path: 'barrierefreiheit',
+    loadComponent: () =>
+      import('./pages/accessibility/accessibility').then(m => m.AccessibilityComponent),
+  },
+  {
     path: 'map',
     canActivate: [authGuard],
     loadComponent: () =>

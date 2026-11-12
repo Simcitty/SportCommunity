@@ -16,8 +16,9 @@
   --clr-danger:       #ff4b4b;
   --clr-success:      #4bff9c;
   --clr-text:         #f0f2f7;
-  --clr-muted:        #6b7280;
-  --clr-muted-2:      #4b5563;
+  /* Keep secondary text readable on the dark surfaces (WCAG contrast). */
+  --clr-muted:        #b7c0ce;
+  --clr-muted-2:      #aeb8c5;
 
   --font-display:     'Bebas Neue', sans-serif;
   --font-body:        'DM Sans', sans-serif;
@@ -51,6 +52,11 @@ body {
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
+
+:focus-visible {
+  outline: 3px solid var(--clr-accent);
+  outline-offset: 3px;
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }

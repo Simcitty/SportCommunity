@@ -10,6 +10,7 @@
     </div>
     <div class="topbar-actions">
       <span class="user-badge">{{ auth.currentUser()?.username }}</span>
+      <a class="accessibility-link" routerLink="/barrierefreiheit">Barrierefreiheit</a>
       <button class="btn btn--ghost btn--sm" (click)="logout()">Abmelden</button>
     </div>
   </nav>
